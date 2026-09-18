@@ -72,31 +72,105 @@ File: bbe.info,  Node: Samples,  Next: Invoking bbe,  Prev: Overview,  Up: Top
 2 Samples using 'bbe'
 *********************
 
-A few examples of running 'bbe':
+Users familiar with the standard stream editor 'sed' often encounter
+similar data manipulation tasks on binary streams.  Below are practical
+examples illustrating common 'bbe' operations, including binary
+analogues to familiar 'sed' patterns:
 
 'bbe -b "/\x80\x50\x0e/:12" -e "d 0 3" -e "c BCD ASC" -e "A \x0a" -e "w /tmp/numbers" -o /dev/null /tmp/bdata'
-     Task here is to extract BCD coded numbers from the file
-     '/tmp/bdata' and write them in ascii format with newline to file
-     '/tmp/numbers'.  12 bytes long blocks containing the BCD-numbers
-     start with three byte sequence of values '0x80', '0x50' and '0x0e'.
-     First three bytes (the block start sequence) are removed ('d 0 3')
-     rest of the block is transformed from BCD to Ascii ('c BCD ASC')
-     and a newline character is appended at the end of the block ('A
-     \x0a').  All transformed blocks are written to '/tmp/numbers' ('w
-     /tmp/numbers').  Nothing is written to the output ('-o /dev/null').
-
+     Extract BCD-encoded numbers from the file '/tmp/bdata' and write
+     them in ASCII format with a newline to '/tmp/numbers'.  The 12-byte
+     blocks containing the BCD numbers start with the three-byte
+     sequence '0x80', '0x50', and '0x0e'.  The first three bytes (the
+     block start sequence) are removed ('d 0 3'), the rest of the block
+     is transformed from BCD to ASCII ('c BCD ASC'), and a newline is
+     appended at the end of the block ('A \x0a').  All transformed
+     blocks are written to '/tmp/numbers' ('w /tmp/numbers'), and normal
+     output is suppressed ('-o /dev/null').
 
 'bbe -b ":525" -e "i 524 \x0a" -o /tmp/data_with_nl /tmp/data'
-     A newline is added after every 525'th byte of the file '/tmp/data'.
+     A newline is added after every 525th byte of the file '/tmp/data'.
      Data with newlines is written to '/tmp/data_with_nl'.
 
 'bbe -b ":526" -e "d 525 1" -o /tmp/data /tmp/data_with_nl'
-     Every 526'th byte (inserted newline in previous example) is removed
-     from the file '/tmp/data_with_nl'.  Data without newlines is
-     written to '/tmp/data'.
+     Every 526th byte (the newline inserted in the previous example) is
+     removed from '/tmp/data_with_nl', restoring the original stream to
+     '/tmp/data'.
 
 'bbe -e "s/\x0d\x0a/\x0a/"'
-     Same effect as has command 'dos2unix'.
+     Converts DOS/Windows CRLF line terminators to Unix LF line
+     terminators across a stream without altering any other binary data,
+     equivalent to 'dos2unix'.
+
+'bbe -e 's#http://old.example.com#https://new.example.com#' binary.elf'
+     Analogous to 'sed' 's#old#new#', replaces a URL or file path inside
+     an executable or binary file.  When the search or replacement
+     string contains slashes ('/'), any non-conflicting character (such
+     as '#' or ':') can be used as the delimiter.
+
+'bbe -e "s#/usr/local/lib\x00#/opt/app/lib\x00\x00\x00\x00\x00\x00#" binary.elf'
+     When patching hardcoded paths or strings in compiled binaries, the
+     replacement string should often maintain the exact byte length of
+     the original to preserve binary offset tables.  Here, the shorter
+     path is padded with null bytes ('\x00') to match the length of the
+     original string.
+
+'bbe -b 0:44 -e "D" input.wav > raw_pcm.bin'
+     Analogous to 'sed' '1,10d' (deleting header lines), this command
+     strips a fixed-size binary header.  The block is defined from
+     offset 0 with a length of 44 bytes (the standard WAV file header),
+     and 'D' deletes the entire block from the stream, leaving only the
+     raw PCM audio payload.
+
+'bbe -b "/\xff\xd8\xff/:/\xff\xd9/" -s firmware.bin > extracted_image.jpg'
+     Analogous to 'sed -n '/START/,/END/p'', this command extracts an
+     embedded payload between two binary delimiters.  With '-s'
+     (suppress), all data outside the matching block is discarded, and
+     only the block from the JPEG start marker ('0xff 0xd8 0xff') to the
+     end marker ('0xff 0xd9') is printed.
+
+'bbe -b "/\x7fELF/:4" -s -e "d 0 4;F h;A \n" disk.img'
+     Analogous to 'sed -n '/pattern/='' (printing matching line
+     numbers), this finds all occurrences of the ELF magic signature
+     ('\x7fELF'), deletes the matched 4 bytes from output, and prints
+     the exact stream offset in hexadecimal ('F h') followed by a
+     newline.
+
+'bbe -b 0x1000:8 -e "r 2 \x90\x90" program.bin'
+     Analogous to patching a specific line in 'sed', this command
+     replaces two bytes at offset 2 within the 8-byte block located at
+     file offset '0x1000' with two x86 NOP instructions ('0x90 0x90'),
+     effectively neutralizing a conditional check.
+
+'bbe -b "/SECRET_KEY=/:27" -e "f 11 \x00" config.dat'
+     Zeroes out sensitive data in a configuration file or memory dump.
+     A 27-byte block starting with the string 'SECRET_KEY=' is located,
+     and the fill command ('f 11 \x00') replaces all bytes from offset
+     11 to the end of the block with null bytes ('0x00').
+
+'bbe -e "y/\x00\xff/\xff\x00/" image.pbm'
+     Analogous to character transliteration with 'sed' 'y/abc/xyz/',
+     this command swaps all occurrences of '0x00' and '0xff' throughout
+     the stream, inverting black and white pixels in a binary bitmap.
+
+'bbe -b :1 -e "& \x7f" capture.bin'
+     Clears the high bit (parity bit) from every byte in a serial
+     communication capture, performing a bitwise AND with '0x7f' across
+     each 1-byte block.
+
+'bbe -b "/PK\x03\x04/:65536" -s -e "w zip_chunk_%03B.bin" -o /dev/null bundle.bin'
+     Analogous to 'sed' 'w filename', this command demultiplexes or
+     splits a binary stream into separate files.  For every ZIP file
+     header found, a 64 KB block is extracted and saved into a
+     sequentially numbered file ('zip_chunk_001.bin',
+     'zip_chunk_002.bin', etc.)  using the '%B' block format specifier.
+
+'bbe -b :16 -s -e "F h;p H;A \n" data.bin'
+     Formats a binary file into a human-readable hex dump.  Each 16-byte
+     block is printed with its stream offset in hexadecimal ('F h'),
+     followed by the hexadecimal byte values ('p H') and a newline ('A
+     \n').  To print both hexadecimal and ASCII side-by-side, use 'p HA'
+     instead of 'p H'.
 
 
 File: bbe.info,  Node: Invoking bbe,  Next: bbe programs,  Prev: Samples,  Up: Top
@@ -572,13 +646,13 @@ Tag Table:
 Node: Top896
 Node: Overview1956
 Node: Samples2460
-Node: Invoking bbe3861
-Node: Invocation4396
-Node: Block5417
-Node: Commands7483
-Node: Limits12329
-Node: bbe programs12695
-Node: Problems17132
+Node: Invoking bbe7828
+Node: Invocation8363
+Node: Block9384
+Node: Commands11450
+Node: Limits16296
+Node: bbe programs16662
+Node: Problems21099
 
 End Tag Table
 

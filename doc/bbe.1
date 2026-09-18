@@ -208,6 +208,18 @@ Two bytes starting at the fifth byte of a 16-byte long block starting at offset 
 .TP 
 bbe \-b :16 \-e "A \ex0a" file1
 A newline is added after every block; block length is 16.
+.TP 
+bbe \-e 's#http://old.example.com#https://new.example.com#' binary.elf
+Replaces a URL or path inside a binary file using '#' as delimiter.
+.TP 
+bbe \-b 0:44 \-e "D" audio.wav
+Strips the first 44 bytes (e.g. WAV header) and outputs the remaining raw payload.
+.TP 
+bbe \-b "/\exff\exd8\exff/:/\exff\exd9/" \-s firmware.bin
+Extracts an embedded JPEG image between its start and end markers.
+.TP 
+bbe \-b :16 \-s \-e "F h;p H;A \en" file1
+Prints a standard 16-byte hexadecimal dump with stream offsets.
 
 .SH "SEE ALSO"
 .BR sed (1).
