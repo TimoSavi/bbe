@@ -236,12 +236,37 @@ get_next_byte()
     return 1;
 }
 
+/* searches for needle of length needle_len in memory range [haystack, haystack_end)
+   using SIMD-accelerated memchr and memcmp
+   returns pointer to first occurrence, or NULL if not found */
+static unsigned char *
+find_pattern(const unsigned char *haystack, const unsigned char *haystack_end,
+             const unsigned char *needle, off_t needle_len)
+{
+    if (needle_len <= 0 || haystack >= haystack_end) return NULL;
+    if (needle_len == 1)
+    {
+        return (unsigned char *) memchr(haystack, needle[0], (size_t) (haystack_end - haystack));
+    }
+    const unsigned char *p = haystack;
+    while (p + needle_len <= haystack_end)
+    {
+        const unsigned char *cand = (const unsigned char *) memchr(p, needle[0], (size_t) (haystack_end - needle_len + 1 - p));
+        if (!cand) return NULL;
+        if (memcmp(cand + 1, needle + 1, (size_t) (needle_len - 1)) == 0)
+        {
+            return (unsigned char *) cand;
+        }
+        p = cand + 1;
+    }
+    return NULL;
+}
+
 /* check if the eof current block is in buffer and mark it in_buffer.block_end */
 void
 mark_block_end()
 {
     unsigned char *safe_search,*scan;
-    int i;
 
     if(in_buffer.stream_end != NULL)
     {
@@ -267,28 +292,11 @@ mark_block_end()
         {
             if(block.type & BLOCK_START_S && in_buffer.block_offset < block.start.S.length) 
                 scan += block.start.S.length - in_buffer.block_offset;
-            i = 0;
-            while(scan <= safe_search - block.stop.S.length + 1 && i < block.stop.S.length) 
-            {
-                i = 0;
-                while(*scan == block.stop.S.string[i] && i < block.stop.S.length)
-                {
-                    scan++;
-                    i++;
-                }
-                if(i) 
-                {
-                    scan -= i - 1;
-                } else
-                {
-                    scan++;
-                }
-            } 
 
-            if (i == block.stop.S.length)
+            unsigned char *match = find_pattern(scan, safe_search + 1, block.stop.S.string, block.stop.S.length);
+            if(match != NULL)
             {
-                scan += i - 2;
-                in_buffer.block_end = scan;
+                in_buffer.block_end = match + block.stop.S.length - 1;
             }
         } else
         {
@@ -299,28 +307,10 @@ mark_block_end()
                     if(in_buffer.block_offset < block.start.S.length)          // to skip block start
                         scan += block.start.S.length - in_buffer.block_offset;
 
-                    i = 0;
-
-                    while(scan <= safe_search - block.start.S.length + 1 && i < block.start.S.length) 
+                    unsigned char *match = find_pattern(scan, safe_search + 1, block.start.S.string, block.start.S.length);
+                    if(match != NULL)
                     {
-                        i = 0;
-                        while(*scan == block.start.S.string[i] && i < block.start.S.length)
-                        {
-                            scan++;
-                            i++;
-                        }
-                        if(i) 
-                        {
-                            scan -= i - 1;
-                        } else
-                        {
-                            scan++;
-                        }
-                    }
-
-                    if (i == block.start.S.length)
-                    {
-                        in_buffer.block_end = scan - 2;
+                        in_buffer.block_end = match - 1;
                     }
                 } else
                 {
@@ -360,7 +350,6 @@ int
 find_block()
 {
     unsigned char *safe_search,*scan_start;
-    int i;
     int found;
 
     found = 0;
@@ -411,30 +400,21 @@ find_block()
             {
                 if(block.start.S.length > 0)
                 {
-                    i = 0;
                     if(in_buffer.stream_end == NULL) safe_search += block.start.S.length - 1;
-                    while(in_buffer.read_pos <= safe_search - block.start.S.length + 1 && i < block.start.S.length)
+                    unsigned char *limit = safe_search - block.start.S.length + 1;
+                    if(in_buffer.read_pos <= limit)
                     {
-                        i = 0;
-                        while(*in_buffer.read_pos == block.start.S.string[i] && i < block.start.S.length)
+                        unsigned char *match = find_pattern(in_buffer.read_pos, safe_search + 1, block.start.S.string, block.start.S.length);
+                        if(match != NULL)
                         {
-                            in_buffer.read_pos++;
-                            i++;
-                        }
-                        if(i) 
-                        {
-                            in_buffer.read_pos -= i - 1;
+                            in_buffer.read_pos = match;
+                            found = 1;
                         } else
                         {
-                            in_buffer.read_pos++;
+                            in_buffer.read_pos = limit + 1;
                         }
                     }
-
-                    if(i == block.start.S.length)
-                    {
-                        in_buffer.read_pos--;
-                        found = 1;
-                    } else if(scan_start == in_buffer.read_pos)
+                    if(!found && scan_start == in_buffer.read_pos)
                     {
                         in_buffer.read_pos++;
                     }
