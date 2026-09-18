@@ -360,7 +360,7 @@ int
 find_block()
 {
     unsigned char *safe_search,*scan_start;
-    register int i;
+    int i;
     int found;
 
     found = 0;
@@ -460,13 +460,13 @@ find_block()
 void
 write_string(char *string)
 {
-    register char *f;
+    char *f;
 
     f = string;
 
     while(*f != 0) f++;
 
-    write_buffer(string,(off_t) (f - string));
+    write_buffer((unsigned char *) string,(off_t) (f - string));
 }
 
 /* write_buffer at the current write position */

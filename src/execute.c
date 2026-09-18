@@ -124,7 +124,7 @@ off_t_to_string(off_t number,char format)
 void
 execute_commands(struct command_list *c)
 {
-    register int i;
+    int i;
     unsigned char a,b;
     unsigned char *p;
     char *str;
@@ -417,7 +417,7 @@ execute_commands(struct command_list *c)
                 break;
             case '<':
             case '>':
-                if (fseeko(c->fd,0,SEEK_SET)) panic("Cannot seek file",c->s1,strerror(errno));
+                if (fseeko(c->fd,0,SEEK_SET)) panic("Cannot seek file",(char *) c->s1,strerror(errno));
                 do
                 {
                     read_count = fread(ioblock,1,IO_BLOCK_SIZE,c->fd);
@@ -460,7 +460,7 @@ write_w_command(unsigned char *buf,size_t length)
     {
         if(c->letter == 'w')
         {
-            if(fwrite(buf,1,length,c->fd) != length) panic("Cannot write to file",c->s2,strerror(errno));
+            if(fwrite(buf,1,length,c->fd) != length) panic("Cannot write to file",(char *) c->s2,strerror(errno));
             if(length) c->count = 1;    // file was written
         }
         c = c->next;
@@ -545,20 +545,20 @@ open_w_files(off_t block_number)
         {
             if(c->fd != NULL) 
             {
-                if(fclose(c->fd) != 0) panic("Error closing file",c->s2,strerror(errno));
+                if(fclose(c->fd) != 0) panic("Error closing file",(char *) c->s2,strerror(errno));
                 if (!c->count && c->s2 != NULL)  // remove if empty
                 {
-                    unlink(c->s2);
+                    unlink((char *) c->s2);
                 }
                 c->fd = NULL;
             }
 
-            bn_printf(file,sizeof(file),c->s1,block_number);
+            bn_printf(file,sizeof(file),(char *) c->s1,block_number);
             c->fd = fopen(file,"w");
             if(c->fd == NULL) panic("Cannot open file for writing",file,strerror(errno));
             c->count = 0;
             if(c->s2 != NULL) free(c->s2);
-            c->s2 = xstrdup(file);
+            c->s2 = (unsigned char *) xstrdup(file);
         }
         c = c->next;
     }
@@ -580,7 +580,7 @@ init_commands(struct commands *commands)
         switch(c->letter)
         {
             case 'w':
-                if(find_block_w_file(c->s1,&wlen) != NULL)
+                if(find_block_w_file((char *) c->s1,&wlen) != NULL)
                 {
                     c->fd = NULL;
                     c->offset = 1;
@@ -588,10 +588,10 @@ init_commands(struct commands *commands)
                     c->s2 = NULL;
                 } else
                 {
-                    c->fd = fopen(c->s1,"w");
-                    if(c->fd == NULL) panic("Cannot open file for writing",c->s1,strerror(errno));
+                    c->fd = fopen((char *) c->s1,"w");
+                    if(c->fd == NULL) panic("Cannot open file for writing",(char *) c->s1,strerror(errno));
                     c->offset = 0;
-                    c->s2 = xstrdup(c->s1);
+                    c->s2 = (unsigned char *) xstrdup((char *) c->s1);
                 }
                 c->count = 0;
                 break;
@@ -606,8 +606,8 @@ init_commands(struct commands *commands)
         switch(c->letter)
         {
             case '>':
-                c->fd = fopen(c->s1,"r");
-                if(c->fd == NULL) panic("Cannot open file for reading",c->s1,strerror(errno));
+                c->fd = fopen((char *) c->s1,"r");
+                if(c->fd == NULL) panic("Cannot open file for reading",(char *) c->s1,strerror(errno));
                 break;
         }
         c = c->next;
@@ -620,8 +620,8 @@ init_commands(struct commands *commands)
         switch(c->letter)
         {
             case '<':
-                c->fd = fopen(c->s1,"r");
-                if(c->fd == NULL) panic("Cannot open file for reading",c->s1,strerror(errno));
+                c->fd = fopen((char *) c->s1,"r");
+                if(c->fd == NULL) panic("Cannot open file for reading",(char *) c->s1,strerror(errno));
                 break;
         }
         c = c->next;
@@ -645,10 +645,10 @@ close_commands(struct commands *commands)
             case 'w':
                 if(c->fd != NULL)
                 {
-                    if(fclose(c->fd) != 0) panic("Error in closing file",c->s2,strerror(errno));
+                    if(fclose(c->fd) != 0) panic("Error in closing file",(char *) c->s2,strerror(errno));
                     if(!c->count && c->s2 != NULL)
                     {
-                        unlink(c->s2);
+                        unlink((char *) c->s2);
                     }
                 }
                 break;

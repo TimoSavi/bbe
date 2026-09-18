@@ -475,7 +475,7 @@ parse_command(char *command_string)
         case '<':
         case '>':
             if(i != 2 || strlen(token[0]) > 1) panic("Error in command",command_string,NULL);
-            new->s1 = xstrdup(token[1]);
+            new->s1 = (unsigned char *) xstrdup(token[1]);
             break;
         case 'j':
         case 'J':
@@ -508,16 +508,16 @@ parse_command(char *command_string)
             break;
         case 'c':
             if(i != 3 || strlen(token[1]) != 3 || strlen(token[2]) != 3 || strlen(token[0]) > 1) panic("Error in command",command_string,NULL);
-            new->s1 = xmalloc(strlen(token[1]) + strlen(token[2]) + 2);
-            strcpy(new->s1,token[1]);
-            strcat(new->s1,token[2]);
+            new->s1 = (unsigned char *) xmalloc(strlen(token[1]) + strlen(token[2]) + 2);
+            strcpy((char *) new->s1,token[1]);
+            strcat((char *) new->s1,token[2]);
             j = 0;
             while(new->s1[j] != 0) {
-                new->s1[j] = toupper(new->s1[j]);
+                new->s1[j] = toupper((unsigned char) new->s1[j]);
                 j++;
             }
             j = 0;
-            while(*convert_strings[j] != 0 && strcmp(convert_strings[j],new->s1) != 0) j++;
+            while(*convert_strings[j] != 0 && strcmp(convert_strings[j],(char *) new->s1) != 0) j++;
             if(*convert_strings[j] == 0) panic("Unknown conversion",command_string,NULL);
             break;
         case 's':
@@ -552,12 +552,13 @@ parse_command(char *command_string)
         case 'F':
         case 'B':
             if(i > 1 && (strlen(token[1]) != 1)) panic("Error in command",command_string,NULL);
+            /* fall through */
         case 'p':
             if(i != 2 || strlen(token[0]) > 1) panic("Error in command",command_string,NULL);
             new->s1 = parse_string(token[1],&new->s1_len);
             j = 0;
             while(new->s1[j] != 0) {
-                new->s1[j] = toupper(new->s1[j]);
+                new->s1[j] = toupper((unsigned char) new->s1[j]);
                 j++;
             }
             if (new->letter == 'p') 
@@ -567,7 +568,7 @@ parse_command(char *command_string)
             {
                 f = FB_formats;
             }
-            while(*f != 0 && strchr(new->s1,*f) == NULL) f++;
+            while(*f != 0 && strchr((char *) new->s1,*f) == NULL) f++;
             if (*f == 0) panic("Error in command",command_string,NULL);
             break;
         case 'N':
