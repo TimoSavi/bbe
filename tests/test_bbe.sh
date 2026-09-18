@@ -38,8 +38,8 @@ if command -v openssl >/dev/null 2>&1; then
 
     # Verify ASN.1 structure remains valid
     openssl asn1parse -inform DER -in "$TMPDIR/cert_modified.der" > "$TMPDIR/asn1.txt"
-    grep "PRINTABLESTRING   :FI" "$TMPDIR/asn1.txt" >/dev/null
-    openssl x509 -in "$TMPDIR/cert_modified.der" -inform DER -text -noout | grep "C=FI" >/dev/null
+    grep -E "PRINTABLESTRING[[:space:]]*:[[:space:]]*FI" "$TMPDIR/asn1.txt" >/dev/null
+    openssl x509 -in "$TMPDIR/cert_modified.der" -inform DER -text -noout | grep -E "C[[:space:]]*=[[:space:]]*FI" >/dev/null
 else
     # Fallback: standalone minimal ASN.1 DER SEQUENCE with countryName C=ES
     printf '\060\011\006\003\125\004\006\023\002ES' > "$CERT_DER"
