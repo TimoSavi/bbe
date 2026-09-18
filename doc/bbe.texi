@@ -6,7 +6,7 @@
 @finalout
 @c %**end of header
 
-@set VERSION 0.2.2
+@set VERSION 0.2.3
 
 @ifinfo 
 @dircategory Utilities 
@@ -18,7 +18,7 @@
 @copying
 This file documents version @value{VERSION} of @command{bbe}, a binary block editor. 
 
-Copyright @copyright{} 2005 Timo Savinen
+Copyright @copyright{} 2005-2026 Timo Savinen
 
 @quotation
 Permission is granted to make and distribute verbatim copies of

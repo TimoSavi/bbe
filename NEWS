@@ -1,1 +1,10 @@
+* 2026-09-18: Version 0.2.3
+  - Critical bug and security vulnerability fixes (segfault in 'd', heap underflow in BCD, heap overflow on large writes, off-by-one over-read)
+  - Fixed exit code inversion and added standard '-h' help option
+  - Modernized C codebase: removed deprecated 'register' keywords, fixed compiler warnings
+  - Performance: SIMD-accelerated pattern search using memchr/memcmp
+  - Modernized Autotools build system and added automated test suite ('make check')
+  - Comprehensive documentation updates: README.md revamp, man page, and Texinfo samples
+  - Note: Code audit, modernization, and test suite developed with AI assistance (Antigravity by Google DeepMind)
+
 * 2005-09-15: Initial version 0.1.0

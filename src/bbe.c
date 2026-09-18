@@ -743,7 +743,7 @@ void
 print_version()
 {
     printf("%s version %s\n",program,version);
-    printf("Copyright (c) 2005 Timo Savinen\n\n");
+    printf("Copyright (c) 2005-2026 Timo Savinen\n\n");
     printf("This is free software; see the source for copying conditions.\n");
     printf("There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n");
 }

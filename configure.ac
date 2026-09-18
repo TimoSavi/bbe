@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([bbe], [0.2.2-24], [tjsa@iki.fi])
+AC_INIT([bbe], [0.2.3], [tjsa@iki.fi])
 AC_CONFIG_SRCDIR([src/bbe.c])
 AC_CONFIG_AUX_DIR([config])
 AM_INIT_AUTOMAKE([foreign tar-pax -Wall])

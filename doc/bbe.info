@@ -1,8 +1,8 @@
 This is bbe.info, produced by makeinfo version 6.7 from bbe.texi.
 
-This file documents version 0.2.2 of 'bbe', a binary block editor.
+This file documents version 0.2.3 of 'bbe', a binary block editor.
 
-   Copyright (C) 2005 Timo Savinen
+   Copyright (C) 2005-2026 Timo Savinen
 
      Permission is granted to make and distribute verbatim copies of
      this manual provided the copyright notice and this permission
@@ -27,9 +27,9 @@ File: bbe.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
 bbe
 ***
 
-This file documents version 0.2.2 of 'bbe', a binary block editor.
+This file documents version 0.2.3 of 'bbe', a binary block editor.
 
-   Copyright (C) 2005 Timo Savinen
+   Copyright (C) 2005-2026 Timo Savinen
 
      Permission is granted to make and distribute verbatim copies of
      this manual provided the copyright notice and this permission
@@ -643,16 +643,16 @@ problems.
 
 
 Tag Table:
-Node: Top896
-Node: Overview1956
-Node: Samples2460
-Node: Invoking bbe7828
-Node: Invocation8363
-Node: Block9384
-Node: Commands11450
-Node: Limits16296
-Node: bbe programs16662
-Node: Problems21099
+Node: Top901
+Node: Overview1966
+Node: Samples2470
+Node: Invoking bbe7838
+Node: Invocation8373
+Node: Block9394
+Node: Commands11460
+Node: Limits16306
+Node: bbe programs16672
+Node: Problems21109
 
 End Tag Table
 

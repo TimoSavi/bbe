@@ -1,3 +1,19 @@
+2026-09-18 Timo Savinen <tjsa@iki.fi>
+
+	* Version 0.2.3
+	* Fixed segmentation fault on invalid 'd' command parameters
+	* Fixed heap buffer underflow in ASCII-to-BCD conversion
+	* Fixed heap buffer overflow on large write operations (>= 256 KB)
+	* Fixed off-by-one heap over-read in mark_block_end() search bounds
+	* Fixed exit code inversion on invalid options and added standard '-h' option
+	* Fixed macro definitions in bbe.h and resolved compiler warnings
+	* Removed deprecated 'register' storage class specifiers
+	* Optimized block search loops using SIMD-accelerated memchr and memcmp
+	* Modernized GNU Autotools build configuration (C99, silent rules, foreign mode)
+	* Added automated regression test suite (make check)
+	* Expanded documentation, man page, Texinfo manual, and README.md with practical sed-like use cases
+	* Code audit, modernizations, and test development completed with AI assistance (Antigravity by Google DeepMind)
+
 2024-09-16 Timo Savinen <tjsa@iki.fi>
 
 	* Version 0.2.2-24
