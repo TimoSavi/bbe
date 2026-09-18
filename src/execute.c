@@ -38,10 +38,10 @@ static int delete_this_block;
 /* tells if current block should be skipped */
 static int skip_this_block;
 
-/* tells if i or s commands are inserting bytes, meaningfull at end of the block */
+/* tells if i or s commands are inserting bytes, meaningful at end of the block */
 static int inserting;
 
-/* tells if there is w-command with file having %d 
+/* tells if there is w-command with file having %B 
    this is only for performance 
    */
 static int w_commands_block_num = 0;
@@ -566,7 +566,7 @@ open_w_files(off_t block_number)
 
                 
 
-/* init_commands, initialize those wich need it, currently w - open file and rpos=0 for all */
+/* init_commands, initialize those which need it, currently w - open file and rpos=0 for all */
 void
 init_commands(struct commands *commands)
 {
@@ -630,7 +630,7 @@ init_commands(struct commands *commands)
 }
 
 
-/* close_commands, close those wich need it, currently w - close file */
+/* close_commands, close those which need it, currently w - close file */
 void
 close_commands(struct commands *commands)
 {
@@ -718,7 +718,7 @@ execute_program(struct commands *commands)
             delete_this_byte = 0;
             inserting = 0;
             block_end = last_byte();
-            put_byte(read_byte());     // as default write current byte from input
+            put_byte(read_byte());     // by default write current byte from input
             execute_commands(commands->byte);
             if(!delete_this_byte && !delete_this_block)
             {

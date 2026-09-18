@@ -63,7 +63,7 @@ set_output_file(char *file)
 void
 write_output_stream(unsigned char *buffer, ssize_t length)
 {
-    if(write(out_stream.fd,buffer,length) == -1) panic("Error writing to",out_stream.file,strerror(errno));
+    if(write(out_stream.fd,buffer,length) == -1) panic("Error writing to file",out_stream.file,strerror(errno));
 }
 
 
@@ -157,7 +157,7 @@ read_input_stream()
         to_be_saved = 0;
         buffer_write_pos = in_buffer.buffer;
         in_buffer.stream_offset = (off_t) 0;
-    } else                                            //we have allready read something
+    } else                                            // We have already read data
     {
         to_be_read = in_buffer.read_pos - in_buffer.buffer;
         to_be_saved = (ssize_t) INPUT_BUFFER_SIZE - to_be_read;
@@ -262,7 +262,7 @@ find_pattern(const unsigned char *haystack, const unsigned char *haystack_end,
     return NULL;
 }
 
-/* check if the eof current block is in buffer and mark it in_buffer.block_end */
+/* check if the end of current block is in buffer and mark it in_buffer.block_end */
 void
 mark_block_end()
 {
@@ -314,7 +314,7 @@ mark_block_end()
                     }
                 } else
                 {
-                    panic("Both block start and stop zero size",NULL,NULL);
+                    panic("Both block start and stop have zero length",NULL,NULL);
                 }
             }
         }
@@ -473,7 +473,7 @@ write_buffer(unsigned char *buf,off_t length)
     out_buffer.block_offset += length;
 }
 
-/* put_byte, put one byte att current write position */
+/* put_byte, put one byte at current write position */
 inline void
 put_byte(unsigned char byte)
 {

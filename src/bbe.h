@@ -148,7 +148,7 @@ struct input_buffer {
 struct output_buffer {
     unsigned char *buffer;
     unsigned char *end;
-    unsigned char *write_pos;    // current write psotion;
+    unsigned char *write_pos;    // current write position
     unsigned char *low_pos;      // low water mark
     off_t block_offset;          // block offset (start = 0) number of bytes written at position write_pos
 };

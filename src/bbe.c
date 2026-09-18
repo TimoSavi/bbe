@@ -380,7 +380,7 @@ parse_block(char *bs)
                     p++;
                 } else
                 {
-                    panic("syntax error in block definition",bs,NULL);
+                    panic("Syntax error in block definition",bs,NULL);
                 }
                 buf[i] = 0;
                 block.stop.S.string = parse_string(buf,&block.stop.S.length);
@@ -390,7 +390,7 @@ parse_block(char *bs)
     } 
     if (*p != 0)
     {
-        panic("syntax error in block definition",bs,NULL);
+        panic("Syntax error in block definition",bs,NULL);
     }
     free(buf);
 }
@@ -666,13 +666,14 @@ parse_command_file(char *file)
     char *line;
     char *info;
     size_t line_len = (8*1024);
+    size_t info_len = strlen(file) + 100;
     int line_no = 0;
 
     line = xmalloc(line_len);
-    info = xmalloc(strlen(file) + 100);
+    info = xmalloc(info_len);
 
     fp = fopen(file,"r");
-    if (fp == NULL) panic("Error in opening file",file,strerror(errno));
+    if (fp == NULL) panic("Error opening file",file,strerror(errno));
 
 #ifdef HAVE_GETLINE
     while(getline(&line,&line_len,fp) != -1) 
@@ -681,7 +682,7 @@ parse_command_file(char *file)
 #endif
     {
         line_no++;
-        sprintf(info,"Error in file '%s' in line %d\n",file,line_no);
+        snprintf(info,info_len,"Error in file '%s' on line %d\n",file,line_no);
         panic_info=info;
         parse_commands(line);
     }
