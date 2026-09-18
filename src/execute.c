@@ -295,7 +295,7 @@ execute_commands(struct command_list *c)
                                     }
                                     break;
                                 }
-                                if(out_buffer.block_offset == 0 || delete_this_byte) break;
+                                if(out_buffer.block_offset == 0 || out_buffer.write_pos <= out_buffer.buffer || delete_this_byte) break;
                                 if((out_buffer.write_pos[-1] >= '0' && out_buffer.write_pos[-1] <= '9'))
                                 {
                                     a = out_buffer.write_pos[-1] - '0';
