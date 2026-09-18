@@ -86,7 +86,7 @@ char *p_formats="DOHAB";
 /* formats for F and B commands */
 char *FB_formats="DOH";
 
-static char short_opts[] = "b:e:f:o:s?V";
+static char short_opts[] = "b:e:f:o:sh?V";
 
 #ifdef HAVE_GETOPT_LONG
 static struct option long_opts[] = {
@@ -94,7 +94,7 @@ static struct option long_opts[] = {
     {"expression",1,NULL,'e'},
     {"file",1,NULL,'f'},
     {"output",1,NULL,'o'},
-    {"help",0,NULL,'?'},
+    {"help",0,NULL,'h'},
     {"version",0,NULL,'V'},
     {"suppress",0,NULL,'s'},
     {NULL,0,NULL,0}
@@ -700,7 +700,7 @@ help(FILE *stream)
     fprintf(stream,"\t\tWrite output to name instead of standard output.\n");
     fprintf(stream,"-s, --suppress\n");
     fprintf(stream,"\t\tSuppress normal output, print only block contents.\n");
-    fprintf(stream,"-?, --help\n");
+    fprintf(stream,"-h, -?, --help\n");
     fprintf(stream,"\t\tDisplay this help and exit.\n");
     fprintf(stream,"-V, --version\n");
 #else
@@ -714,7 +714,7 @@ help(FILE *stream)
     fprintf(stream,"\t\tWrite output to name instead of standard output.\n");
     fprintf(stream,"-s\n");
     fprintf(stream,"\t\tSuppress normal output, print only block contents.\n");
-    fprintf(stream,"-?\n");
+    fprintf(stream,"-h, -?\n");
     fprintf(stream,"\t\tDisplay this help and exit.\n");
     fprintf(stream,"-V\n");
 #endif
@@ -727,7 +727,7 @@ help(FILE *stream)
 void 
 usage(int opt)
 {
-    printf("Unknown option '-%c'\n",(char) opt);
+    if (opt != 0 && opt != '?') fprintf(stderr,"Unknown option '-%c'\n",(char) opt);
     help(stderr);
 }
 
@@ -774,9 +774,18 @@ main (int argc, char **argv)
             case 's':
                 output_only_block = 1;
                 break;
-            case '?':
+            case 'h':
                 help(stdout);
                 exit(EXIT_SUCCESS);
+                break;
+            case '?':
+                if (optopt == '?' || (optind > 0 && optind <= argc && strcmp(argv[optind - 1], "-?") == 0))
+                {
+                    help(stdout);
+                    exit(EXIT_SUCCESS);
+                }
+                usage(optopt);
+                exit(EXIT_FAILURE);
                 break;
             case 'V':
                 print_version();
