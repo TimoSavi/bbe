@@ -248,7 +248,7 @@ mark_block_end()
         safe_search = in_buffer.stream_end;
     } else
     {
-        safe_search = in_buffer.buffer + INPUT_BUFFER_SIZE;
+        safe_search = in_buffer.buffer + INPUT_BUFFER_SIZE - 1;
     }
     
     in_buffer.block_end = NULL;
