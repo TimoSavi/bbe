@@ -488,7 +488,7 @@ parse_command(char *command_string)
             new->s1 = parse_string(token[2],&new->s1_len);
             break;
         case 'd':
-            if(i < 2 || i > 3 || strlen(token[0]) > 1) panic("Error in command",command_string,NULL);
+            if(i != 3 || strlen(token[0]) > 1) panic("Error in command",command_string,NULL);
             new->offset = parse_long(token[1]);
 
             if(token[2][0] == '*' && !token[2][1])
