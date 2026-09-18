@@ -483,7 +483,7 @@ find_block_w_file(char *file,int *len)
         {
             ppos = f;
             f++;
-            while(f - ppos < 4 && isdigit(*f)) f++;
+            while(f - ppos < 4 && isdigit((unsigned char)*f)) f++;
             if(*f == 'B')
             {
                 *len = (int) (f - ppos) + 1;
@@ -498,29 +498,36 @@ find_block_w_file(char *file,int *len)
 
 /* replaces all %B or %nB format strings with block number in a file name */
 void
-bn_printf(char *file,char *str,off_t block_number)
+bn_printf(char *file,size_t max_size,char *str,off_t block_number)
 {
     char *bstart,*f;
     char num[128],format[64];
     int blen;
+    size_t cur_len = 0;
 
     f = str;
     file[0] = 0;
 
     while((bstart = find_block_w_file(f,&blen)) != NULL)
     {
-        num[0] = 0;
-        format[0] = 0;
-        strncat(file,f,bstart - f);
-        strncpy(format,bstart,blen-1);
-        format[blen-1] = 0;
-        strcat(format,"lld");
-        sprintf(num,format,(long long) block_number);
-        if(strlen(file) + strlen(num) >= 4096) panic("Filename for w-command too long",str,NULL);
-        strcat(file,num);
+        size_t prefix_len = (size_t)(bstart - f);
+        if(cur_len + prefix_len >= max_size) panic("Filename for w-command too long",str,NULL);
+        memcpy(file + cur_len,f,prefix_len);
+        cur_len += prefix_len;
+        file[cur_len] = 0;
+
+        snprintf(format,sizeof(format),"%.*slld",blen - 1,bstart);
+        int num_len = snprintf(num,sizeof(num),format,(long long) block_number);
+        if(num_len < 0 || cur_len + (size_t) num_len >= max_size) panic("Filename for w-command too long",str,NULL);
+        memcpy(file + cur_len,num,num_len);
+        cur_len += (size_t) num_len;
+        file[cur_len] = 0;
+
         f = bstart + blen;
     }
-    strcat(file,f);
+    size_t suffix_len = strlen(f);
+    if(cur_len + suffix_len >= max_size) panic("Filename for w-command too long",str,NULL);
+    memcpy(file + cur_len,f,suffix_len + 1);
 }
 
 /* close (if open) and open next w-command files for new block */
@@ -546,7 +553,7 @@ open_w_files(off_t block_number)
                 c->fd = NULL;
             }
 
-            bn_printf(file,c->s1,block_number);
+            bn_printf(file,sizeof(file),c->s1,block_number);
             c->fd = fopen(file,"w");
             if(c->fd == NULL) panic("Cannot open file for writing",file,strerror(errno));
             c->count = 0;
