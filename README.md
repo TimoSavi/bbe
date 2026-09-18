@@ -1,10 +1,10 @@
 ## bbe - binary block editor
-bbe program is a sed-like editor for binary files. bbe performs basic byte related
-transformations on blocks of input stream. bbe is non-interactive command line tool and
-can be used as a part of a pipeline. bbe makes only one pass over input stream.
-bbe contains also grep-like features, like printing the filename, offset and block number.
+The bbe program is a sed-like editor for binary files. It performs basic byte-related
+transformations on blocks of the input stream. bbe is a non-interactive command-line tool and
+can be used as part of a pipeline. bbe makes only a single pass over the input stream.
+bbe also provides grep-like features, such as printing the filename, offset, and block number.
 ### How to build
-GNU autotools and gcc are required to build bbe.
+GNU Autotools and GCC are required to build bbe.
 
 Clone from github and then:
 ```

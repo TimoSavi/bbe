@@ -71,18 +71,18 @@ into another language, under the above conditions for modified versions.
 @cindex greetings
 @cindex overview
 
-The @command{bbe} program is a sed-like editor for binary files. @command{bbe} 
-performs basic byte related transformations on blocks of input stream. @command{bbe} is non-interactive command line tool and
-can be used as a part of a pipeline. @command{bbe} makes only one pass over input stream. 
+The @command{bbe} program is a sed-like editor for binary files. It 
+performs basic byte-related transformations on blocks of the input stream. @command{bbe} is a non-interactive command-line tool and
+can be used as part of a pipeline. @command{bbe} makes only a single pass over the input stream. 
 
-@command{bbe} contains also grep-like features, like printing the filename, offset and block number.
+@command{bbe} also provides grep-like features, such as printing the filename, offset, and block number.
 
 
 @node Samples, Invoking bbe, Overview, Top
 @chapter Samples using @command{bbe}
 @cindex sample
 
-Few examples of running @command{bbe}:
+A few examples of running @command{bbe}:
 
 @table @samp
 @item bbe -b "/\x80\x50\x0e/:12" -e "d 0 3" -e "c BCD ASC" -e "A \x0a" -e "w /tmp/numbers" -o /dev/null /tmp/bdata
@@ -164,7 +164,8 @@ Write output to @var{file} instead of standard output.
 Suppress printing of normal output, print only block contents.
 
 
-@item -?
+@item -h
+@itemx -?
 @itemx --help
 Print an informative help message describing the options and then exit
 successfully.
@@ -181,7 +182,7 @@ All remaining options are names of input files, if no input files are specified 
 @section Block definition
 @cindex block
 
-@command{bbe} devides the input stream to blocks defined by the @code{-b} option. If block is
+@command{bbe} divides the input stream into blocks defined by the @code{-b} option. If block is
 not defined, the whole input stream is considered as one block. Commands have effect only inside a block, rest of the input stream
 remains untouched. Currently @command{bbe} supports only one block definition per invocation. If input stream consists of different blocks, 
 several @command{bbe}s can be combined in a pipeline.
@@ -194,17 +195,17 @@ Block starts at offset @var{N} of input stream (first byte is 0). Block is @var{
 only one block to be defined.
 
 @item :@var{M}
-The whole input stream is divided to @var{M}-size blocks. 
+The whole input stream is divided into @var{M}-byte blocks. 
 
 @item /@var{start}/:/@var{stop}/
-Blocks start with sequence @var{start} and end with sequence @var{stop}. Both @var{start} and @var{stop} are included to blocks.
+Blocks start with sequence @var{start} and end with sequence @var{stop}. Both @var{start} and @var{stop} are included in blocks.
 
 @item /@var{start}/:
-Blocks start with sequence @var{start} and ends at next occurrence of @var{start}. Only the first @var{start} is included to block.
+Blocks start with sequence @var{start} and end at the next occurrence of @var{start}. Only the first @var{start} is included in the block.
 
 @item :/@var{stop}/
 Blocks start at the beginning of input stream or after the end of previous block. Block ends at first occurrence of @var{stop}.
-Only the last @var{stop} is included to blocks.
+Only the last @var{stop} is included in blocks.
 @end table
 
 It is possible to use c-like byte values in @var{N}, @var{M}, @var{start} and @var{stop}. 
@@ -248,7 +249,7 @@ Also escape code @code{\y} can be used. Decimal values of @code{\y}'s:
 13
 
 @item \;
-59@*Semicolon must be escaped, because it is a command delimitter.
+59@*A semicolon must be escaped because it is a command delimiter.
 @end table
 
 
@@ -269,9 +270,9 @@ Hexadecimal values
 @section @command{bbe} commands
 @cindex commands
 
-Commands in @command{bbe} can be divided in two groups: Block related commands
-and byte related commands. Block related commands operate at block level e.g. remove a block. 
-Byte related commands work allways inside a block and they don't have effect beyond the block boundaries.
+Commands in @command{bbe} can be divided into two groups: block commands
+and byte commands. Block commands operate at the block level, e.g., removing a block. 
+Byte commands always operate inside a block and have no effect beyond the block boundaries.
 
 Same escape codes for byte values in @var{string}s can be used as in @var{start} and @var{stop} of block definition.
 
@@ -282,18 +283,18 @@ Same escape codes for byte values in @var{string}s can be used as in @var{start}
 Write the @var{string} to output stream before the block.
 
 @item D [@var{N}]
-Delete the @var{N}'th block. If @var{N} is not defined all blocks are deleted from output stream. 
+Delete the @var{N}th block. If @var{N} is not defined all blocks are deleted from output stream. 
 @strong{Note}: First block is number one.
 
 @item A @var{string}
 Write the @var{string} to output stream after the block.
 
 @item J @var{N}
-Commands appearing after this command have no effect until @var{N} blocks are found. Means "Jump first @var{N} blocks".
+Commands appearing after this command have no effect until @var{N} blocks are found. This means "Jump the first @var{N} blocks".
 @strong{Note}: Commands that are defined before this command have effect on every block.
 
 @item L @var{N}
-Commands appearing after this command have no effect after @var{N} blocks are found. Means "Leave blocks after @var{N}'th block".
+Commands appearing after this command have no effect after @var{N} blocks are found. This means "Leave blocks after the @var{N}th block".
 @strong{Note}: Commands that are defined before this command have effect on every block.
 
 @item N
@@ -315,13 +316,13 @@ Octal.
 
 @item B @var{f}
 Before block contents the current block number and colon is printed in format specified by @var{f}. 
-Block numbering starts at one. @var{f} can have one of the sames codes as @code{F}-command.
+Block numbering starts at one. @var{f} can have any of the same codes as the @code{F} command.
 
 @item > @file{file}
-Before printing a block, the contents of file @file{file} is printed.
+Before printing a block, the contents of file @file{file} are printed.
 
 @item < @file{file}
-After printing a block, the contents of file @file{file} is printed.
+After printing a block, the contents of file @file{file} are printed.
 @end table
 
 @subheading Byte commands are:
@@ -333,12 +334,12 @@ After printing a block, the contents of file @file{file} is printed.
 Converts bytes from @var{from} to @var{to}. Currently supported formats are:
 @table @code
 @item ASC
-Ascii
+ASCII
 
 @item BCD
 Binary Coded Decimal
 @end table
-@strong{Note}: Bytes, that cannot be converted are passed through as they are. e.g. in ASC -> BCD conversion, ASCII characters not 
+@strong{Note}: Bytes that cannot be converted are passed through as-is. e.g. in ASC -> BCD conversion, ASCII characters not 
 in range @code{'0'} -- @code{'9'} are not converted.
 
 @item d @var{n} @var{m}|*
@@ -385,15 +386,15 @@ Binary.
 Replace bytes with @var{string} starting at the byte number @var{n} of the block.
 
 @item s/@var{search}/@var{replace}/
-All occurences of @var{search} are replaced by @var{replace}. @var{replace} can be empty. Separator @code{/} can be replaced by any
+All occurrences of @var{search} are replaced by @var{replace}. @var{replace} can be empty. Separator @code{/} can be replaced by any
 character not present in @var{search} or @var{replace}.
 
 @item w @file{file}
 Contents of blocks are written to file @file{file}. @strong{Note}: Data inserted by commands @code{A}, @code{I}, 
 @code{>} and @code{<}
 are written to file @file{file} and @code{j} and @code{l} commands have no effect on @code{w}-commands. Zero size files are not preserved.@*
-Filename can contain format string @code{%B} or @code{%nB}, these format strings are replace by current block number (starting from one), causing every block to have it's own file. 
-In @code{%nB}, the @code{n} is field width in range 0-99. If @code{n} has a leading zero, then the block numbers will be left padded with zeroes.
+Filename can contain format string @code{%B} or @code{%nB}, these format strings are replaced by the current block number (starting from one), causing every block to have its own file. 
+In @code{%nB}, the @code{n} is field width in range 0-99. If @code{n} has a leading zero, then the block numbers will be left-padded with zeroes.
  
 
 @item y/@var{source}/@var{dest}/
@@ -421,8 +422,8 @@ Exchange the contents of nibbles (half an octet) of bytes.
 @cindex big files
 @cindex limits
 
-At least in GNU/Linux @command{bbe} should be able to handle big files (> 4 GB), other
-systems are  not tested.
+Under GNU/Linux, @command{bbe} supports large files (> 4 GB); other
+platforms have not been tested.
 
 There are however, some limitations in block and command definitions:
 
@@ -436,9 +437,9 @@ are limited to @emph{16384} bytes.
 @node bbe programs, Problems, Invoking bbe, Top
 @chapter How @command{bbe} works
 
-@command{bbe} scans the input stream just once, so the last block may differ from the block definition, because @command{bbe} doesn't
-'peek' the end of the input stream. Last block may be shorter than defined, e.g. if block is defined as @samp{/string/:128} 
-and if the end of input stream is found before 128'th byte of the last block is reached, the last block remains shorter.
+@command{bbe} scans the input stream just once, so the last block may differ from the block definition, because @command{bbe} does not
+peek ahead at the end of the input stream. The last block may be shorter than defined, e.g., if a block is defined as @samp{/string/:128} 
+and the end of the input stream is encountered before the 128th byte of the last block is reached, the last block remains shorter.
 
 @subheading Basic execution cycle:
 
@@ -524,7 +525,7 @@ Example output:
 @*
 
 @item bbe -b "/Linux/:5" -s -e "N;D;A \x0a" /bin/* | uniq
-Print the file names of those programs in /bin directory which contains word @samp{Linux}.
+Print the file names of those programs in the /bin directory which contain the word @samp{Linux}.
 Example output:
 @example
 /bin/loadkeys:
@@ -542,8 +543,8 @@ The start sequence is not printed.@*
 The least significant nybble of bytes after @code{x5f} is cleared.@*
 
 @item bbe -b "/\xff\xd8\xff/:/\xff\xd9/" -s -e "w pic%02B.jpg" -o /dev/null manual.pdf
-Extract jpg-images from pdf-file to separate jpg-files (assuming that the jpg start/stop sequences
-does not appear in other context than jpg-images). 
+Extract JPEG images from a PDF file to separate JPEG files (assuming that the JPEG start/stop sequences
+do not appear in any context other than JPEG images). 
 Files will be named as @file{pic01.jpg}, @file{pic02.jpg}, @file{pic03.jpg},@dots{} @*
 
 @item bbe -b "_<body>_:_</body>_" -s -o temp nicebody.html
