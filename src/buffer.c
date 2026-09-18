@@ -476,9 +476,16 @@ write_buffer(unsigned char *buf,off_t length)
 
     if(!length) return;
 
+    if(length >= OUTPUT_BUFFER_SIZE)
+    {
+        flush_buffer();
+        write_output_stream(buf,length);
+        out_buffer.block_offset += length;
+        return;
+    }
+
     if(out_buffer.write_pos + length >= out_buffer.end)
     {
-        if(out_buffer.write_pos == out_buffer.buffer) panic("Out buffer too small, should not happen!",NULL,NULL);
         flush_buffer();
     }
     memcpy(out_buffer.write_pos,buf,length);
