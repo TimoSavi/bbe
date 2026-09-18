@@ -181,9 +181,18 @@ parse_string(char *string,off_t *length)
 
     while(*p != 0)
     {
+        if(i >= INPUT_BUFFER_LOW)
+        {
+            panic("String too long",string,NULL);
+        }
         if(*p == '\\')
         {
             p++;
+            if(*p == 0)
+            {
+                buf[i++] = '\\';
+                break;
+            }
             if(strchr("\\;abtnvfr",*p) != NULL)
             {
                 switch(*p)
@@ -249,16 +258,13 @@ parse_string(char *string,off_t *length)
         {
             buf[i] = (unsigned char) *p++;
         }
-        if(i > INPUT_BUFFER_LOW)
-        {
-            panic("string too long",string,NULL);
-        }
         i++;
     }
     if(i)       
     {
-        ret = (unsigned char *) xmalloc(i);
+        ret = (unsigned char *) xmalloc(i + 1);
         memcpy(ret,buf,i);
+        ret[i] = 0;
     } else
     {
         ret = NULL;
@@ -611,7 +617,7 @@ parse_commands(char *command_string)
         switch(*c)
         {
             case '\\':
-                c++;
+                if(*(c + 1) != 0) c++;
                 break;
             case '"':
                 if(inside_d) 
