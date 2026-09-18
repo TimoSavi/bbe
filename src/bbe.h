@@ -49,15 +49,19 @@
 #include <stdio.h>
 
 #ifndef HAVE_OFF_T
-#define long int off_t
+typedef long int off_t;
 #endif
 
 /* Types */
 
 /* Constants */
 /* exit values */
+#ifndef EXIT_FAILURE
 #define EXIT_FAILURE 1
+#endif
+#ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
+#endif
 
 /* Input buffer size */
 #define INPUT_BUFFER_LOW (16*1024)
